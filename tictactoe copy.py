@@ -6,7 +6,7 @@ def main():
     choice=input("Welcome to TicTacToe! \nEnter x or o: ")
     
     
-    # The default grid with extra element for value (len(l))=10 and not 9
+    # The default grid with extra element for value (len(l))=10 and not 9)
     l=[" ", " ", " ", " ", " ", " ", " ", " ", " "," "]
     
     # Performing the actual grid loop till the game ends
