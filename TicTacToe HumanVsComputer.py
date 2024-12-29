@@ -4,7 +4,7 @@ def main():
     print_grid(["1", "2", "3", "4", "5", "6", "7", "8", "9"])
     
     # Asking the user to choose between x and o
-    choice=input("\nWelcome to TicTacToe! \nEnter x or o: ")
+    choice=input("\nWelcome to TicTacToe! \nWould you like to play enter x or o: ")
     
     
     # The default grid with extra element for value (len(l))=10 and not 9
@@ -14,7 +14,7 @@ def main():
     while True:
         
         if choice=="o":
-        # Storing the optimal move for o in l
+            # Getting the best move for x
             l=max_ll(minimax(l))
         #Printing the grid to the user again and again
             print_grid(l)
