@@ -2,7 +2,7 @@ import random
 import os
 
 
-class Game:
+class Board:
     def __init__(self, game_state, chance):
         self.chance=chance
         self.state=game_state
@@ -53,7 +53,7 @@ class Game:
             if self.state[i]==" ":
                 branch_copy=list(self.state)
                 branch_copy[i]=move
-                self.children.append(Game(branch_copy, _chance))
+                self.children.append(Board(branch_copy, _chance))
                 
                 
                 
@@ -112,8 +112,12 @@ def main():
     Print(printing_grid)
     
     print("\nWelcome to TicTacToe!")
-    
-    tree=Game([" ", " ", " ", " ", " ", " ", " ", " ", " "],"x")
+   
+
+
+
+
+    tree=Board([" ", " ", " ", " ", " ", " ", " ", " ", " "],"x")
     
     
     # Asking the user to choose for x or o
@@ -122,59 +126,64 @@ def main():
         if choice in ["x", "o"]:
             break
     
+    game_moves=[] 
     
-    next_move=tree
-    
-    
+    game_moves.append(tree)
+ 
     # Performing the actual grid loop till the game ends, (game-loop)
-    while True:
         # CLearing the window before every play
-        
-        
-        if choice=="o":
-            # Getting the best move for x
-            next_move=next_move.move()
-            #Printing the grid to the user again and again
-            # next_move.Print()
-            Print(next_move.state)
-    
-            if next_move.status!=2:
-                break
-        
-        # Player move:
-        player=player_move(list(next_move.state),choice)
-        for i in next_move.children:
-            for j in i:
-                if player==j.state:
-                    next_move=j
-          
-        os.system("cls" if os.name == "nt" else "clear")
+   
+    # Performing the actual grid loop till the game ends, (game-loop)
+    if choice=="o":
+        game_moves.append(game_moves[-1].move())
+        Print(game_moves[-1].state)
+    while True:
+    # Player move:
+        player=player_move(list(game_moves[-1].state),choice)
+        if player not in ["undo","redo"]:
+            for i in game_moves[-1].children:
+                for j in i:
+                    if player==j.state:
 
-        # Ending the game if win/lose/draw
-        if next_move.status!=2:
+                        game_moves.append(j) 
+            _game_moves=list(game_moves)
+        elif player=="undo":
+            if len(game_moves)>1:
+                game_moves=game_moves[:-2]
+                os.system("cls" if os.name == "nt" else "clear")
+                Print(game_moves[-1].state)
+            else:
+                print("Nothing to undo.")
+            continue
+
+        elif player=="redo":
+            if len(game_moves)<len(_game_moves):
+                game_moves=_game_moves[:len(game_moves)+2]
+                os.system("cls" if os.name == "nt" else "clear")
+                Print(game_moves[-1].state)
+            else:
+                print("Nothing to redo.")
+            continue
+        if game_moves[-1].status!=2:
             break
-          
-          
-            
-        if choice=="x":
-        # Storing the optimal move for o in l
-            next_move=next_move.move()
-        
-        #Printing the grid to the user again and again
-            # next_move.Print()
-            Print(next_move.state)
-            # Ending the game if win/lose/draw
-            if next_move.status!=2:
-                break 
-        
+        os.system("cls" if os.name == "nt" else "clear")
+        c=game_moves[-1].move()
+        game_moves.append(c)
+        _game_moves.append(c)
+
+        if game_moves[-1].status!=2:
+            break
+        Print(game_moves[-1].state)
+
+       
     # The player will never win, In Sha ALLAH 
     # next_move.Print()
-    if next_move.status!=0:
+    if game_moves[-1].status!=0:
         print("Computer Wins!!")
     else:
         print("It's Draw!, you'll never win against me!")
     # next_move.Print()
-    Print(next_move.state)
+    Print(game_moves[-1].state)
 
 
         
@@ -197,10 +206,15 @@ def Print(table):
 def player_move(grid, chance):
     # Preventing the user form entering into a filled block
     while True:
+        
+        inp=(input(f"Enter from 1 to 9: "))
         try:
-            inp=int(input(f"Enter from 1 to 9: "))
-            inp=inp-1
+            inp=int(inp)-1
         except ValueError:
+            if inp.lower().strip()=="undo":
+                return "undo"
+            elif inp.lower().strip()=="redo":
+                return "redo"
             continue
         
         if grid[inp]==" " and chance=="x":
